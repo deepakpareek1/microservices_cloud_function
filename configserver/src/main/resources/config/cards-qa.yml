@@ -1,0 +1,12 @@
+
+build:
+ version: "2.0"
+
+cards:
+ message: "Welcome to entailment cards related QA APIs"
+ contactDetails:
+  name: "Deepak Pareek QA Lead"
+  email: "dpareek@entailment.com"
+ onCallSupport:
+  -(444)5555-3456
+  -(222)6666-3234

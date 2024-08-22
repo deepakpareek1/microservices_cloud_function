@@ -1,0 +1,12 @@
+
+build:
+ version: "1.0"
+
+cards:
+ message: "Welcome to entailment cards related PROD APIs"
+ contactDetails:
+  name: "Deepak Pareek Product Owner"
+  email: "dpareek@entailment.com"
+ onCallSupport:
+  -(111)5555-3456
+  -(999)6666-3234

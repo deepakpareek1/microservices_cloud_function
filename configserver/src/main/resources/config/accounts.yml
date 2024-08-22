@@ -1,0 +1,12 @@
+  
+build:
+ version: "3.0"
+
+accounts:
+ message: "Welcome to entailment accounts related docker APIs"
+ contactDetails:
+  name: "Deepak Pareek"
+  email: "dpareek@entailment.com"
+ onCallSupport:
+  -(444)1345-3456
+  -(222)4566-3234
