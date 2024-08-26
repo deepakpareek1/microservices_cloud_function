@@ -102,7 +102,7 @@
 		        <version>3.4.1</version>
 		        <configuration>
 		          <to>
-		            <image>deepakpareek1/${project.artifactId}:s4</image>
+		            <image>deepakpareek1/${project.artifactId}:s5</image>
 		          </to>
 		        </configuration>
 		    </plugin>
