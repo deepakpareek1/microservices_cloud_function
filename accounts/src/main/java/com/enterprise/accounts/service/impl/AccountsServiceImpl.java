@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 import com.enterprise.accounts.constants.AccountsConstants;
 import com.enterprise.accounts.dto.AccountsDto;
+import com.enterprise.accounts.dto.AccountsMsgDto;
 import com.enterprise.accounts.dto.CustomerDto;
 import com.enterprise.accounts.entity.Accounts;
 import com.enterprise.accounts.entity.Customer;
@@ -25,8 +29,11 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
 	
+	private static final Logger log = LoggerFactory.getLogger(AccountsServiceImpl.class);
+	
 	private AccountsRepository accountRepository;
 	private CustomerRepository customerRepository;
+	private final StreamBridge streamBridge;
 
 	/**
 	 * 
@@ -44,8 +51,17 @@ public class AccountsServiceImpl implements IAccountsService {
 //		customer.setCreatedAt(LocalDateTime.now());
 //		customer.setCreatedBy("Admin");
 		Customer savedCustomer = customerRepository.save(customer);
-		accountRepository.save(this.createNewAccount(savedCustomer));
+		Accounts savedAccount = accountRepository.save(this.createNewAccount(savedCustomer));
+		sendCommunication(savedAccount, savedCustomer);
 	}
+	
+	private void sendCommunication(Accounts account, Customer customer) {
+        var accountsMsgDto = new AccountsMsgDto(account.getAccountNumber(), customer.getName(),
+                customer.getEmail(), customer.getMobileNumber());
+        log.info("Sending Communication request for the details: {}", accountsMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", accountsMsgDto);
+        log.info("Is the Communication request successfully triggered ? : {}", result);
+    }
 	
 	 /**
      * @param customer - Customer Object
@@ -120,6 +136,25 @@ public class AccountsServiceImpl implements IAccountsService {
         customerRepository.deleteById(customer.getCustomerId());
         return true;
     }
+
+    /**
+	 * 
+	 * @param accountNumber - Long
+	 * @return boolean indicating if the update of communication is successful or not
+	 */
+	@Override
+	public boolean updateCommunicationStatus(Long accountNumber) {
+		boolean isUpdated = false;
+        if(accountNumber !=null ){
+            Accounts accounts = accountRepository.findById(accountNumber).orElseThrow(
+                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountNumber.toString())
+            );
+            accounts.setCommunicationSw(true);
+            accountRepository.save(accounts);
+            isUpdated = true;
+        }
+        return  isUpdated;
+	}
 
 	
 }
